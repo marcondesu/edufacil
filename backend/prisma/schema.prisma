@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Professor {
+  id          String       @id @default(uuid())
+  nome        String
+  email       String       @unique
+  disciplinas Disciplina[] // Relacionamento um-para-muitos com Disciplina
+
+  @@map("professor")
+}
+
+model Aluno {
+  id          String       @id @default(uuid())
+  nome        String
+  email       String       @unique
+  disciplinas Disciplina[] @relation("AlunoDisciplina") // Muitos-para-muitos sem referências explícitas
+
+  @@map("aluno")
+}
+
+model Disciplina {
+  id          String    @id @default(uuid())
+  nome        String
+  professorId String
+  professor   Professor @relation(fields: [professorId], references: [id]) // Um-para-muitos com Professor
+  alunos      Aluno[]   @relation("AlunoDisciplina") // Relacionamento muitos-para-muitos com Aluno
+
+  @@map("disciplina")
+}
